@@ -1,4 +1,6 @@
-﻿namespace ChatPocApi.Data.Entities
+﻿using System;
+
+namespace ChatPocApi.Data.Entities
 {
     public class Message
     {
@@ -6,5 +8,6 @@
         public User Sender { get; set; }
         public User Recevier { get; set; }
         public string Content { get; set; }
+        public DateTime MsgDate { get; set; } = DateTime.MinValue;
     }
 }
