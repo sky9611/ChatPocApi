@@ -19,5 +19,10 @@ namespace ChatPocApi.Data
         {
             _config = config;
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(_config.GetConnectionString("ChatPoc"));
+        }
     }
 }
