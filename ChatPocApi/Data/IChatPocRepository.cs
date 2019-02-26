@@ -15,14 +15,14 @@ namespace ChatPocApi.Data
         Task<bool> SaveChangesAsync();
 
         // Users
-        Task<User[]> GetAllUsersAsync(bool includeChats = false);
-        Task<User> GetUserAsync(string userName, bool includeChats = false);
+        Task<User[]> GetAllUsersAsync(bool includeChannels = false);
+        Task<User> GetUserAsync(string userName, bool includeChannels = false);
 
-        // Chats
-        Task<Chat[]> GetChatsByUserAsync(string userName, bool includeMessages = false);
-        Task<Chat> GetChatByUserAsync(string userName, string interlocutorName, bool includeMessages = false);
+        // Channels
+        Task<Channel> GetChannelByNameAsync(string channelName, bool includeMessages = false);
+        Task<Channel[]> GetChannelsByUserAsync(string userName, bool includeMessages = false);
 
         // Messages
-        Task<Message> GetLastMessageByUserAsync(string userName, string interlocutorName);
+        Task<Message> GetLastMessageByChannelAsync(string channelName);
     }
 }

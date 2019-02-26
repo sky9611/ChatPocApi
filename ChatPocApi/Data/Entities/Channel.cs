@@ -2,12 +2,12 @@
 
 namespace ChatPocApi.Data.Entities
 {
-    public class User
+    public class Channel
     {
-        public int UserId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
-        public string ProfilePicture { get; set; }
         public ICollection<UserChannel> UserChannels { get; set; }
+        public ICollection<Message> Messages { get; set; }
 
     }
 }

@@ -31,46 +31,46 @@ namespace ChatPocApi.Data
             _context.Remove(entity);
         }
 
-        public async Task<User[]> GetAllUsersAsync(bool includeChats = false)
+        public async Task<User[]> GetAllUsersAsync(bool includeChannels = false)
         {
             _logger.LogInformation($"Getting all Users");
 
             IQueryable<User> query = _context.Users;
 
-            if (includeChats)
+            if (includeChannels)
             {
                 query = query
-                  .Include(u => u.Chats)
-                  .ThenInclude(c => c.Messages);
+                  .Include(u => u.UserChannels)
+                  .ThenInclude(uc => uc.Channel);
             }
 
             return await query.ToArrayAsync();
         }
 
 
-        public async Task<User> GetUserAsync(string userName, bool includeChats = false)
+        public async Task<User> GetUserAsync(string userName, bool includeChannels = false)
         {
             _logger.LogInformation($"Getting user with name: {userName}");
 
-            IQueryable<User> query = _context.Users;
+            IQueryable<User> query = _context.Users
+                .Where(u => u.Name == userName);
 
-            if (includeChats)
+            if (includeChannels)
             {
                 query = query
-                  .Include(u => u.Chats)
-                  .ThenInclude(c => c.Messages);
+                  .Include(u => u.UserChannels
+                                    .Where(uc => uc.User.Name == userName)
+                                    .Select(uc => uc.Channel));
             }
-
-            query = query.Where(u => u.Name == userName);
 
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<Chat> GetChatByUserAsync(string userName, string interlocutorName, bool includeMessages = false)
+        public async Task<Channel> GetChannelByNameAsync(string channelName, bool includeMessages = false)
         {
-            _logger.LogInformation($"Getting all Chats between {userName} and {interlocutorName}");
+            _logger.LogInformation($"Getting channel named {channelName}");
 
-            IQueryable<Chat> query = _context.Chats;
+            IQueryable<Channel> query = _context.Channels;
 
             if (includeMessages)
             {
@@ -80,44 +80,45 @@ namespace ChatPocApi.Data
 
             // Add Query
             query = query
-              .Where(c => (c.User1.Name == userName && c.User2.Name == interlocutorName) || 
-                          (c.User2.Name == userName && c.User1.Name == interlocutorName));
+              .Where(c => c.Name == channelName);
 
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<Chat[]> GetChatsByUserAsync(string userName, bool includeMessages = false)
+        public async Task<Channel[]> GetChannelsByUserAsync(string userName, bool includeMessages = false)
         {
-            _logger.LogInformation($"Getting all Chats of {userName}");
+            _logger.LogInformation($"Getting all channels of {userName}");
 
-            IQueryable<Chat> query = _context.Chats;
+            IQueryable<Channel> query = _context.UserChannels
+                .Where(uc => uc.User.Name == userName)
+                .Select(uc => uc.Channel)
+                .Distinct();
 
             if (includeMessages)
             {
                 query = query
                   .Include(c => c.Messages);
             }
-
-            // Add Query
-            query = query
-              .Where(c => c.User1.Name == userName || c.User2.Name == userName);
 
             return await query.ToArrayAsync();
         }
 
-        public async Task<Message> GetLastMessageByUserAsync(string userName, string interlocutorName)
+        public async Task<Message> GetLastMessageByChannelAsync(string channelName)
         {
-            _logger.LogInformation($"Getting last message between {userName} and {interlocutorName}");
+            _logger.LogInformation($"Getting last message of channel {channelName}");
 
-            IQueryable<Message> query = _context.Messages;
+            Task<ICollection<Message>> taskMessages = _context.Channels
+                .Where(c => c.Name == channelName)
+                .Select(c => c.Messages).FirstOrDefaultAsync() ;
 
-            // Add Query
-            query = query
-              .Where(c => (c.Sender.Name == userName && c.Recevier.Name == interlocutorName) ||
-                          (c.Recevier.Name == userName && c.Sender.Name == interlocutorName))
-              .OrderByDescending(c => c.MsgDate);
+            taskMessages.Result.OrderByDescending(m => m.MsgDate);
 
-            return await query.FirstOrDefaultAsync();
+            Task<Message> res = Task<Message>.Factory.StartNew(() =>
+            {
+                return taskMessages.Result.FirstOrDefault();
+            });
+
+            return await res;
         }
 
 

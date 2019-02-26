@@ -1,4 +1,5 @@
-﻿using ChatPocApi.Data;
+﻿using AutoMapper;
+using ChatPocApi.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,8 @@ namespace ChatPocApi
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ChatPocContext>();
+            services.AddAutoMapper();
+
             services.AddScoped<IChatPocRepository, ChatPocRepository>();
         }
 
