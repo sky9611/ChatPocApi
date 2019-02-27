@@ -25,6 +25,8 @@ namespace ChatPocApi.Data
         Task<bool> CreateChannelAsync(string channelName, ICollection<string> users);
 
         // Messages
+        Task<Message> GetMessageAsync(string senderName, DateTime msgDate);
         Task<Message> GetLastMessageByChannelAsync(string channelName);
+        Task<bool> PostMessageAsync(string senderName, string channelName, string content, DateTime msgDate);
     }
 }

@@ -7,6 +7,7 @@ using ChatPocApi.Data;
 using ChatPocApi.Data.Entities;
 using ChatPocApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
@@ -85,13 +86,38 @@ namespace ChatPocApi.Controllers
             return BadRequest();
         }
 
+        //[HttpPatch("{channelName}")]
+        //public async Task<ActionResult<ChannelModel>> Patch(string channelName, JsonPatchDocument<ChannelModel> patchDoc)
+        //{
+        //    try
+        //    {
+        //        if (patchDoc == null)
+        //            return BadRequest("Content is null");
+        //        var channel = await _chatPocRepository.GetChannelByNameAsync(channelName);
+        //        if (channel == null) return NotFound($"Could not find channel named {channelName}");
+        //        var channelModel = _mapper.Map<ChannelModel>(channel);
+        //        patchDoc.ApplyTo(channelModel);
+        //        _mapper.Map(channelModel, channel);
+        //        if (await _chatPocRepository.SaveChangesAsync())
+        //        {
+        //            return _mapper.Map<ChannelModel>(channel);
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return this.StatusCode(StatusCodes.Status500InternalServerError, "DataBase Failure");
+        //    }
+
+        //    return BadRequest();
+        //}
+
         [HttpDelete("{channelName}")]
         public async Task<IActionResult> Delete(string channelName)
         {
             try
             {
                 var channelToBeDeleted = await _chatPocRepository.GetChannelByNameAsync(channelName);
-                if (channelToBeDeleted == null) return NotFound($"Could not find camp with moniker of {channelName}");
+                if (channelToBeDeleted == null) return NotFound($"Could not find channel named {channelName}");
 
                 _chatPocRepository.Delete(channelToBeDeleted);
 

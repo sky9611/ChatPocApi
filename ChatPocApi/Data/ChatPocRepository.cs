@@ -153,10 +153,35 @@ namespace ChatPocApi.Data
             return await SaveChangesAsync();
         }
 
+        public async Task<Message> GetMessageAsync(string senderName, DateTime msgDate)
+        {
+            _logger.LogInformation($"Get the message from {senderName} sent in {msgDate.ToString()}");
+            IQueryable<Message> query = _context.Messages
+                .Where(m => m.Sender.Name==senderName && m.MsgDate == msgDate)
+                .Include(m => m.Sender);
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> PostMessageAsync(string senderName, string channelName, string content, DateTime msgDate)
+        {
+            _logger.LogInformation($"Post a new message from {senderName} to {channelName}");
+            var message = new Message { Content = content, MsgDate = msgDate };
+            User user = GetUserAsync(senderName).Result;
+            var channel = _context.Channels
+                .Include(c => c.Messages)
+                .Single(c => c.Name == channelName);
+            message.Sender = user;
+            Add<Message>(message);
+            channel.Messages.Add(message);
+
+            return await SaveChangesAsync();
+        }
+
         //public async Task<bool> DeleteChannelAsync(string channelName)
         //{
         //    _logger.LogInformation($"Create a new channel {channelName}");
-            
+
         //    return await SaveChangesAsync();
         //}
 
