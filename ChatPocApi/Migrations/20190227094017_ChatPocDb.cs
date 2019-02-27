@@ -90,7 +90,11 @@ namespace ChatPocApi.Migrations
             migrationBuilder.InsertData(
                 table: "Channels",
                 columns: new[] { "Id", "Name" },
-                values: new object[] { 1, "伽蓝の堂" });
+                values: new object[,]
+                {
+                    { 1, "Office" },
+                    { 2, "shiki_mikaya" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Users",
@@ -108,7 +112,9 @@ namespace ChatPocApi.Migrations
                 values: new object[,]
                 {
                     { 1, 1, "Hi, I'm Shiki", new DateTime(2019, 2, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
+                    { 5, 2, "Hello Mikaya", new DateTime(2019, 2, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
                     { 2, 1, "Hi, I'm Mikaya", new DateTime(2019, 2, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
+                    { 4, 2, "Hello Shiki", new DateTime(2019, 2, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
                     { 3, 1, "Hi, I'm the boss", new DateTime(2019, 2, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), 3 }
                 });
 
@@ -118,7 +124,9 @@ namespace ChatPocApi.Migrations
                 values: new object[,]
                 {
                     { 1, 1 },
+                    { 1, 2 },
                     { 2, 1 },
+                    { 2, 2 },
                     { 3, 1 }
                 });
 

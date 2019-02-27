@@ -23,10 +23,9 @@ namespace ChatPocApi.Data
             _config = config;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_config.GetConnectionString("ChatPoc"));
-        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
+            => optionsBuilder
+                .UseSqlServer(_config.GetConnectionString("ChatPoc"));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,7 +67,12 @@ namespace ChatPocApi.Data
                     new
                     {
                         Id = 1,
-                        Name = "伽蓝の堂"
+                        Name = "Office"
+                    },
+                    new
+                    {
+                        Id = 2,
+                        Name = "shiki_mikaya"
                     }
                 );
 
@@ -88,6 +92,16 @@ namespace ChatPocApi.Data
                     {
                         UserId = 3,
                         ChannelId = 1
+                    },
+                    new
+                    {
+                        UserId = 2,
+                        ChannelId = 2
+                    },
+                    new
+                    {
+                        UserId = 1,
+                        ChannelId = 2
                     }
                 );
 
@@ -116,6 +130,22 @@ namespace ChatPocApi.Data
                         ChannelId = 1,
                         Content = "Hi, I'm the boss",
                         MsgDate = new DateTime(2019, 2, 26)
+                    },
+                    new
+                    {
+                        MessageId = 4,
+                        SenderUserId = 2,
+                        ChannelId = 2,
+                        Content = "Hello Shiki",
+                        MsgDate = new DateTime(2019, 2, 27)
+                    },
+                    new
+                    {
+                        MessageId = 5,
+                        SenderUserId = 1,
+                        ChannelId = 2,
+                        Content = "Hello Mikaya",
+                        MsgDate = new DateTime(2019, 2, 27)
                     }
                 );
 

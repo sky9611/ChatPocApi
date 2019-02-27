@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ChatPocApi.Models
 {
-    public class ChannelModel
+    public class CreatingChannelModel
     {
         public string Name { get; set; }
-        public ICollection<UserChannelModel> UserChannels { get; set; }
-        public ICollection<MessageModel> Messages { get; set; }
+        public ICollection<string> Users { get; set; }
     }
 }

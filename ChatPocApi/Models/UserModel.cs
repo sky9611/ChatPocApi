@@ -10,6 +10,6 @@ namespace ChatPocApi.Models
         public string Name { get; set; }
         [StringLength(50)]
         public string ProfilePicture { get; set; }
-        public ICollection<UserChannelModel> userChannels { get; set; }
+        public ICollection<UserChannelModel> UserChannels { get; set; }
     }
 }

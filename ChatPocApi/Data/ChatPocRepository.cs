@@ -40,33 +40,55 @@ namespace ChatPocApi.Data
             if (includeChannels)
             {
                 query = query
-                  .Include(u => u.UserChannels)
-                  .ThenInclude(uc => uc.Channel);
+                    .Include(u => u.UserChannels)
+                        .ThenInclude(uc => uc.Channel)
+                            .ThenInclude(c => c.Messages)
+                                .ThenInclude(m => m.Sender);
             }
 
             return await query.ToArrayAsync();
         }
-
 
         public async Task<User> GetUserAsync(string userName, bool includeChannels = false)
         {
             _logger.LogInformation($"Getting user with name: {userName}");
 
             IQueryable<User> query = _context.Users
-                .Where(u => u.Name == userName);
+                .Where(u => u.Name == userName); ;
 
             if (includeChannels)
             {
                 query = query
-                  .Include(u => u.UserChannels
-                                    .Where(uc => uc.User.Name == userName)
-                                    .Select(uc => uc.Channel));
+                    .Include(u => u.UserChannels)
+                        .ThenInclude(uc => uc.Channel)
+                            .ThenInclude(c => c.Messages)
+                                .ThenInclude(m => m.Sender);
             }
 
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<Channel> GetChannelByNameAsync(string channelName, bool includeMessages = false)
+        public async Task<Channel[]> GetAllChannelsAsync(bool includeMessages = false, bool includeUsers = false)
+        {
+            _logger.LogInformation($"Getting all Users");
+
+            IQueryable<Channel> query = _context.Channels;
+
+            if (includeMessages)
+            {
+                query = query
+                    .Include(c => c.Messages);
+            }
+
+            if(includeUsers)
+                query = query
+                    .Include(c => c.UserChannels)
+                        .ThenInclude(uc => uc.User);
+
+            return await query.ToArrayAsync();
+        }
+
+        public async Task<Channel> GetChannelByNameAsync(string channelName, bool includeMessages = false, bool includeUsers = false)
         {
             _logger.LogInformation($"Getting channel named {channelName}");
 
@@ -78,6 +100,11 @@ namespace ChatPocApi.Data
                   .Include(c => c.Messages);
             }
 
+            if (includeUsers)
+                query = query
+                    .Include(c => c.UserChannels)
+                        .ThenInclude(uc => uc.User);
+
             // Add Query
             query = query
               .Where(c => c.Name == channelName);
@@ -85,14 +112,12 @@ namespace ChatPocApi.Data
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<Channel[]> GetChannelsByUserAsync(string userName, bool includeMessages = false)
+        public async Task<Channel[]> GetChannelsByUserAsync(string userName, bool includeMessages = false, bool includeUsers = false)
         {
             _logger.LogInformation($"Getting all channels of {userName}");
 
-            IQueryable<Channel> query = _context.UserChannels
-                .Where(uc => uc.User.Name == userName)
-                .Select(uc => uc.Channel)
-                .Distinct();
+            IQueryable<Channel> query = _context.Channels
+                .Where(c => c.UserChannels.Any(uc => uc.User.Name == userName));
 
             if (includeMessages)
             {
@@ -100,8 +125,40 @@ namespace ChatPocApi.Data
                   .Include(c => c.Messages);
             }
 
+            if (includeUsers)
+                query = query
+                    .Include(c => c.UserChannels)
+                        .ThenInclude(uc => uc.User);
+
+
             return await query.ToArrayAsync();
         }
+
+        public async Task<bool> CreateChannelAsync(string channelName, ICollection<string> userNames)
+        {
+            _logger.LogInformation($"Create a new channel {channelName}");
+            var channel = new Channel { Name = channelName, UserChannels = new List<UserChannel>()};
+            foreach (var userName in userNames)
+            {
+                User user = GetUserAsync(userName).Result;
+                channel.UserChannels.Add(
+                    new UserChannel
+                    {
+                        User = user,
+                        Channel = channel
+                    }
+                );
+            }
+            Add<Channel>(channel);
+            return await SaveChangesAsync();
+        }
+
+        //public async Task<bool> DeleteChannelAsync(string channelName)
+        //{
+        //    _logger.LogInformation($"Create a new channel {channelName}");
+            
+        //    return await SaveChangesAsync();
+        //}
 
         public async Task<Message> GetLastMessageByChannelAsync(string channelName)
         {
@@ -109,7 +166,7 @@ namespace ChatPocApi.Data
 
             Task<ICollection<Message>> taskMessages = _context.Channels
                 .Where(c => c.Name == channelName)
-                .Select(c => c.Messages).FirstOrDefaultAsync() ;
+                .Select(c => c.Messages).FirstOrDefaultAsync();
 
             taskMessages.Result.OrderByDescending(m => m.MsgDate);
 

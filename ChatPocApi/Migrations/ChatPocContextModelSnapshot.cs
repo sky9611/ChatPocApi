@@ -35,7 +35,12 @@ namespace ChatPocApi.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "伽蓝の堂"
+                            Name = "Office"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "shiki_mikaya"
                         });
                 });
 
@@ -85,6 +90,22 @@ namespace ChatPocApi.Migrations
                             Content = "Hi, I'm the boss",
                             MsgDate = new DateTime(2019, 2, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SenderUserId = 3
+                        },
+                        new
+                        {
+                            MessageId = 4,
+                            ChannelId = 2,
+                            Content = "Hello Shiki",
+                            MsgDate = new DateTime(2019, 2, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SenderUserId = 2
+                        },
+                        new
+                        {
+                            MessageId = 5,
+                            ChannelId = 2,
+                            Content = "Hello Mikaya",
+                            MsgDate = new DateTime(2019, 2, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SenderUserId = 1
                         });
                 });
 
@@ -150,6 +171,16 @@ namespace ChatPocApi.Migrations
                         {
                             UserId = 3,
                             ChannelId = 1
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            ChannelId = 2
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            ChannelId = 2
                         });
                 });
 

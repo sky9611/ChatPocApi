@@ -19,8 +19,10 @@ namespace ChatPocApi.Data
         Task<User> GetUserAsync(string userName, bool includeChannels = false);
 
         // Channels
-        Task<Channel> GetChannelByNameAsync(string channelName, bool includeMessages = false);
-        Task<Channel[]> GetChannelsByUserAsync(string userName, bool includeMessages = false);
+        Task<Channel[]> GetAllChannelsAsync(bool includeMessages = false, bool includeUsers = false);
+        Task<Channel> GetChannelByNameAsync(string channelName, bool includeMessages = false, bool includeUsers = false);
+        Task<Channel[]> GetChannelsByUserAsync(string userName, bool includeMessages = false, bool includeUsers = false);
+        Task<bool> CreateChannelAsync(string channelName, ICollection<string> users);
 
         // Messages
         Task<Message> GetLastMessageByChannelAsync(string channelName);
