@@ -97,7 +97,8 @@ namespace ChatPocApi.Data
             if (includeMessages)
             {
                 query = query
-                  .Include(c => c.Messages);
+                    .Include(c => c.Messages)
+                        .ThenInclude(m => m.Sender);
             }
 
             if (includeUsers)
